@@ -6,7 +6,7 @@ var Key=0;
 var player_puck=new Player(20,200,45,46);
 
 var img = new Image();
-img.src = 'pacmanright.jpg';
+img.src = 'pacmanright.png';
 
 img.onload = function () {
 	player_puck.source = img;
@@ -14,7 +14,7 @@ img.onload = function () {
  
 function init(){
  canvas=document.getElementById('maze');
- canvas.style.background='#000';
+ canvas.style.background='#030';
  context=canvas.getContext('2d');
  loop(context);
 }

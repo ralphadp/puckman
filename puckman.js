@@ -21,9 +21,12 @@ function init() {
 var Repository = new function() {
 
     this.background = new Image();
-	this.pacman = new Image();
-	
-	var numImages = 2;
+	this.pacmanRight = new Image();
+    this.pacmanLeft = new Image();
+    this.pacmanDown = new Image();
+    this.pacmanUp = new Image();
+
+	var numImages = 5;
 	var numLoaded = 0;
 
 	function imageLoaded() {
@@ -37,12 +40,27 @@ var Repository = new function() {
 		imageLoaded();
 	};
 
-	this.pacman.onload = function () {
+	this.pacmanRight.onload = function () {
 		imageLoaded();
 	};
+
+    this.pacmanLeft.onload = function () {
+        imageLoaded();
+    };
+
+    this.pacmanDown.onload = function () {
+        imageLoaded();
+    };
+
+    this.pacmanUp.onload = function () {
+        imageLoaded();
+    };
 	
 	this.background.src = "puckmaze.png";
-	this.pacman.src = 'pacmanright.png';
+	this.pacmanRight.src = 'pacmanright.png';
+    this.pacmanLeft.src = 'pacmanleft.png';
+    this.pacmanUp.src = 'pacmanup.png';
+    this.pacmanDown.src = 'pacmandown.png';
 };
 
 function Background(x, y , width, height) {
@@ -100,15 +118,32 @@ function Player(x, y, width, height, maze) {
     this.PLAYERESTEP = 10;
     this.score = 0;
     this.maze = maze;
+    this.currentPacman = Repository.pacmanRight;
 
     Drawable.call(this, x, y, width, height);
 
 	this.draw = function() {
 	    this.context.fillStyle = '#fff';
-		if (Repository.pacman != null) {
-		    this.context.drawImage(Repository.pacman, this.current * this.width, 0, this.width, this.height, this.x, this.y, this.width, this.height);
-		}
-		this.current = (this.current + 1) % this.totalFrames;
+
+        if (KEY_STATUS.left) {
+            if (Repository.pacmanLeft != null) {
+                this.currentPacman = Repository.pacmanLeft;
+            }
+        } else if (KEY_STATUS.right) {
+            if (Repository.pacmanRight != null) {
+                this.currentPacman = Repository.pacmanRight;
+            }
+        } else if (KEY_STATUS.up) {
+            if (Repository.pacmanUp != null) {
+                this.currentPacman = Repository.pacmanUp;
+            }
+        } else if (KEY_STATUS.down) {
+            if (Repository.pacmanDown != null) {
+                this.currentPacman = Repository.pacmanDown;
+            }
+        }
+        this.context.drawImage(this.currentPacman, this.current * this.width, 0, this.width, this.height, this.x, this.y, this.width, this.height);
+        this.current = (this.current + 1) % this.totalFrames;
 	};
 	
 	this.move = function() {

@@ -25,8 +25,10 @@ var Repository = new function() {
     this.pacmanLeft = new Image();
     this.pacmanDown = new Image();
     this.pacmanUp = new Image();
+    this.pill = new Image();
+    this.pillEnergy = new Image();
 
-	var numImages = 5;
+    var numImages = 7;
 	var numLoaded = 0;
 
 	function imageLoaded() {
@@ -55,12 +57,22 @@ var Repository = new function() {
     this.pacmanUp.onload = function () {
         imageLoaded();
     };
+
+    this.pill.onload = function () {
+        imageLoaded();
+    };
+
+    this.pillEnergy.onload = function () {
+        imageLoaded();
+    };
 	
 	this.background.src = "puckmaze.png";
 	this.pacmanRight.src = 'pacmanright.png';
     this.pacmanLeft.src = 'pacmanleft.png';
     this.pacmanUp.src = 'pacmanup.png';
     this.pacmanDown.src = 'pacmandown.png';
+    this.pill.src = 'pill.png';
+    this.pillEnergy.src = 'pillenergy.png';
 };
 
 function Background(x, y , width, height) {
@@ -88,7 +100,12 @@ function Game () {
 			Background.prototype.canvasHeight = this.bgCanvas.height;
 			this.background = new Background(0, 0, 900, 700);
 
-            this.maze = new GameMap();
+            Pills.prototype.context = this.bgContext;
+            Pills.prototype.canvasWidth = this.bgCanvas.width;
+            Pills.prototype.canvasHeight = this.bgCanvas.height;
+            this.pills = new Pills();
+
+            this.maze = new GameMap(this.pills);
 			Player.prototype.context = this.context;
 			Player.prototype.canvasWidth = this.canvas.width;
 			Player.prototype.canvasHeight = this.canvas.height;
@@ -101,6 +118,7 @@ function Game () {
 	
 	this.start = function() {
 	    this.paint();
+        this.pills.draw();
 		this.player_puck.draw();
         //call the callback-able function
 		animate();
@@ -201,10 +219,19 @@ function Player(x, y, width, height, maze) {
 		}
         return false;
 	}
+    this.eat = function() {
+        if (this.maze.row == undefined || this.maze.rowHeight == undefined || this.maze.column == undefined || this.maze.columnWidth == undefined) {
+            return;
+        }
+        if (this.maze.row == this.maze.rowHeight && this.maze.column == this.maze.columnWidth) {
+            this.maze.pills.pillsMap[this.maze.row - 1][this.maze.column] = 0;
+        }
+    }
 }
 Player.prototype = new Drawable();
 
-function GameMap() {
+function GameMap(pills) {
+    this.pills = pills;
     this.division = 50;
     this.mazeMap = [[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0],
                     [0,0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0],
@@ -283,19 +310,53 @@ function GameMap() {
 
         var valid = this.mazeMap[this.row][this.column];
         if (valid == 1) {
-            var row = this.sectorY (y + height);
-            var column = this.sectorX (x + width);
-            return (this.mazeMap[row][column] == 1);
+            this.rowHeight = this.sectorY (y + height);
+            this.columnWidth = this.sectorX (x + width);
+            return (this.mazeMap[this.rowHeight][this.columnWidth] == 1);
         }
 
         return (valid == 1);
     }
 }
 
+function Pills() {
+    this.division = 50;
+    this.pillsMap = [[0,0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0],
+                     [0,0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0],
+                     [0,2,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,0],
+                     [0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0],
+                     [0,0,0,0,1,1,0,0,1,1,0,0,1,1,0,0,0,0],
+                     [0,0,0,0,1,1,0,0,1,1,0,0,1,1,0,0,0,0],
+                     [0,0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0],
+                     [0,0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0],
+                     [0,0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0],
+                     [0,0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0],
+                     [0,0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0],
+                     [0,0,0,0,1,1,0,0,0,0,0,0,1,1,0,0,0,0],
+                     [0,0,0,0,1,2,0,0,0,0,0,0,2,1,0,0,0,0]];
+
+    Drawable.call(this, 10, 15, 20, 20);
+
+    this.draw = function() {
+       for (var column = 0, x = this.x; column < this.pillsMap[0].length; column++, x+=50) {
+            for (var row = 0, y = this.y ; row < this.pillsMap.length; row++, y+=50) {
+                if (this.pillsMap[row][column] == 1) {
+                    this.context.drawImage(Repository.pill, x, y);
+                } else if (this.pillsMap[row][column] == 2) {
+                    this.context.drawImage(Repository.pillEnergy, x, y);
+                }
+            }
+        }
+    };
+}
+Pills.prototype = new Drawable();
+
 function animate() {
 	requestAnimFrame( animate );
 	game.paint();
 	game.background.draw();
+    game.pills.draw();
 	game.player_puck.move();
+    game.player_puck.eat();
 	game.player_puck.draw();
 }

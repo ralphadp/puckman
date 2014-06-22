@@ -13,8 +13,11 @@
 			#background {
 				z-index: -1;
 			}
+            #pills {
+                z-index: 0;
+            }
 			#puck {
-				z-index: 0;
+				z-index: 1;
 			}
 		</style>
 	
@@ -23,9 +26,13 @@
 		<canvas id="background" width="900" height="700">
 		Canvas not supported by your browser.
 		</canvas>
+        <canvas id="pills" width="900" height="700">
+        Canvas not supported by your browser.
+        </canvas>
 		<canvas id="puck" width="900" height="700">
 		Canvas not supported by your browser.
 		</canvas>
+
 		<script type="application/javascript" src="coreKeyHandle.js"></script>
         <script type="application/javascript" src="spriteDraw.js"></script>
 		<script type="application/javascript" src="puckman.js"></script>

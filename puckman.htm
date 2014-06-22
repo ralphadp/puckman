@@ -5,14 +5,25 @@
 		<title>Punk man</title>
 		<style>
 			canvas {
-				border:1px;
-				solid #bb0;
+				position: absolute;
+				top: 0px;
+				left: 0px;
+				background: transparent;
+			}
+			#background {
+				z-index: -1;
+			}
+			#puck {
+				z-index: 0;
 			}
 		</style>
 	
 	</head>
 	<body>
-		<canvas id="maze" width="800" height="450">
+		<canvas id="background" width="900" height="700">
+		Canvas not supported by your browser.
+		</canvas>
+		<canvas id="puck" width="900" height="700">
 		Canvas not supported by your browser.
 		</canvas>
 		<script type="application/javascript" src="coreKeyHandle.js"></script>
